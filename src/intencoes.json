@@ -1,0 +1,39 @@
+{
+  "intencoes": {
+    "saudacao": {
+      "utterances": ["olá", "oi", "bom dia", "boa tarde", "boa noite"]
+    },
+    "ajuda": {
+      "utterances": ["ajuda", "socorro", "preciso de ajuda"],
+      "entities": {
+        "assunto": "(?:sobre|de|do|da)\\s+([\\w\\s]+)"
+      }
+    },
+    "despedida": {
+      "utterances": ["tchau", "até logo", "adeus"]
+    }
+  },
+  "flow": {
+    "saudacao": "res_saudacao",
+    "ajuda": "res_ajuda",
+    "despedida": "res_despedida"
+  },
+  "responses": {
+    "res_saudacao": [
+      "Olá! Como posso ajudar?",
+      "Oi! Em que posso ser útil?",
+      "Bem-vindo! Como posso te ajudar hoje?"
+    ],
+    "res_ajuda": [
+      "Claro! Sobre o que você precisa de ajuda?",
+      "Estou aqui para ajudar. Qual sua dúvida?",
+      "Pode me dizer com o que precisa de ajuda?"
+    ],
+    "res_despedida": [
+      "Até logo! Se precisar, é só chamar.",
+      "Tchau! Volte sempre que quiser.",
+      "Adeus! Espero ter ajudado."
+    ]
+  },
+  "resposta_padrao": "Desculpe, não entendi. Pode reformular?"
+}
