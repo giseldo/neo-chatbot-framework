@@ -14,9 +14,22 @@
     }
   },
   "flow": {
-    "saudacao": "res_saudacao",
-    "ajuda": "res_ajuda",
-    "despedida": "res_despedida"
+    "saudacao": {
+      "next": "res_saudacao"
+    },
+    "ajuda": {
+      "next": {
+        "if_entidade_assunto": {
+          "tecnologia": "res_ajuda_tecnologia",
+          "financeiro": "res_ajuda_financeiro",
+          "default": "res_ajuda"
+        },
+        "else": "res_ajuda"
+      }
+    },
+    "despedida": {
+      "next": "res_despedida"
+    }
   },
   "responses": {
     "res_saudacao": [
@@ -33,6 +46,12 @@
       "Até logo! Se precisar, é só chamar.",
       "Tchau! Volte sempre que quiser.",
       "Adeus! Espero ter ajudado."
+    ],
+    "res_ajuda_tecnologia": [
+      "Você precisa de ajuda com tecnologia? Posso explicar sobre computadores, internet, etc."
+    ],
+    "res_ajuda_financeiro": [
+      "Você precisa de ajuda com assuntos financeiros? Posso explicar sobre contas, pagamentos, etc."
     ]
   },
   "resposta_padrao": "Desculpe, não entendi. Pode reformular?"

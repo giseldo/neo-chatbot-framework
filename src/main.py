@@ -24,24 +24,47 @@ def extrair_entidades(mensagem, intencao):
         for nome, padrao in entidades_cfg.items():
             match = re.search(padrao, mensagem, re.IGNORECASE)
             if match:
-                entidades[nome] = match.group(1).strip()
+                entidades[nome] = match.group(1).strip().lower()
     return entidades
 
-def buscar_resposta(intencao):
-    # Busca o vínculo entre intenção e resposta na chave "flow"
-    if intencao and intencao in dados.get("flow", {}):
-        response_key = dados["flow"][intencao]
-        if response_key and response_key in dados.get("responses", {}):
-            respostas = dados["responses"][response_key]
-            if isinstance(respostas, list):
-                return random.choice(respostas)
-            return respostas
+def buscar_resposta(intencao, entidades=None):
+    flow = dados.get("flow", {})
+    responses = dados.get("responses", {})
+    if not intencao or intencao not in flow:
+        return dados.get("resposta_padrao", "Desculpe, não entendi.")
+
+    next_step = flow[intencao].get("next")
+    # Se for string simples, retorna resposta normalmente
+    if isinstance(next_step, str):
+        resposta_key = next_step
+    # Se for dict, processa condições
+    elif isinstance(next_step, dict):
+        resposta_key = None
+        # Verifica condição de entidade
+        if "if_entidade_assunto" in next_step and entidades:
+            assunto = entidades.get("assunto", "").lower()
+            condicoes = next_step["if_entidade_assunto"]
+            if assunto in condicoes:
+                resposta_key = condicoes[assunto]
+            else:
+                resposta_key = condicoes.get("default")
+        # Se não caiu em nenhuma condição, usa else
+        if not resposta_key:
+            resposta_key = next_step.get("else")
+    else:
+        return dados.get("resposta_padrao", "Desculpe, não entendi.")
+
+    if resposta_key and resposta_key in responses:
+        respostas = responses[resposta_key]
+        if isinstance(respostas, list):
+            return random.choice(respostas)
+        return respostas
     return dados.get("resposta_padrao", "Desculpe, não entendi.")
 
-def responder(mensagem, histórico):
+def responder(mensagem, historico):
     intencao = identificar_intencao(mensagem)
-    resposta = buscar_resposta(intencao)
     entidades = extrair_entidades(mensagem, intencao)
+    resposta = buscar_resposta(intencao, entidades)
     if entidades:
         resposta += f"\n[Entidades extraídas: {entidades}]"
     return resposta
